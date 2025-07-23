@@ -13,7 +13,7 @@ class EmailController(private val emailService: EmailService) {
     fun sendVerification(
         @RequestBody request: EmailCodeRequest,
     ): ResponseEntity<String> {
-        emailService.sendVerificationEmail(request.email, request.code)
+        emailService.sendVerificationEmail(request.email, request.code, request.username)
         return ResponseEntity.ok("Verification email sent successfully.")
     }
 }
