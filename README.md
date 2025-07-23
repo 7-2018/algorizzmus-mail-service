@@ -1,0 +1,1 @@
+# algorizzmus-mail-service
