@@ -54,12 +54,12 @@ class EmailService(
     fun sendVerificationEmail(
         to: String,
         code: String,
-        username: String? = null,
+        username: String,
     ) {
         val htmlContent = processTemplate(
             "email/account-verification",
             mapOf(
-                "username" to (username ?: "User"),
+                "username" to username,
                 "code" to code,
             ),
         )
@@ -72,12 +72,26 @@ class EmailService(
         }
     }
 
-    fun sendPasswordResetEmail(
+    fun sendForgotPasswordEmail(
         to: String,
         code: String,
+        username: String,
     ) {
-        val body = "Your password reset code is $code"
-        sendEmail(to, PASSWORD_RESET_EMAIL_SUBJECT, body)
+
+        val htmlContent = processTemplate(
+            "email/password-reset",
+            mapOf(
+                "username" to username,
+                "code" to code,
+            ),
+        )
+
+        if (htmlContent != null) {
+            sendHtmlEMail(to, PASSWORD_RESET_EMAIL_SUBJECT, htmlContent)
+        } else {
+            val body = "Your code for password reset is $code"
+            sendEmail(to, PASSWORD_RESET_EMAIL_SUBJECT, body)
+        }
     }
 
     companion object {

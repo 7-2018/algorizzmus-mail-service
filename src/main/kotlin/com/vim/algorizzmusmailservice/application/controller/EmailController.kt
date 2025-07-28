@@ -10,10 +10,18 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class EmailController(private val emailService: EmailService) {
     @PostMapping("/send-verification-email")
-    fun sendVerification(
+    fun sendVerificationEmail(
         @RequestBody request: EmailCodeRequest,
     ): ResponseEntity<String> {
         emailService.sendVerificationEmail(request.email, request.code, request.username)
         return ResponseEntity.ok("Verification email sent successfully.")
+    }
+
+    @PostMapping("/send-forgot-password-email")
+    fun sendForgotPasswordEmail(
+        @RequestBody request: EmailCodeRequest,
+    ): ResponseEntity<String> {
+        emailService.sendForgotPasswordEmail(request.email, request.code, request.username)
+        return ResponseEntity.ok("Password reset email sent successfully.")
     }
 }
