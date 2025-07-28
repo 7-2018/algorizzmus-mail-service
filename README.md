@@ -1,28 +1,8 @@
 # Algorizzmus Mail Service
 
-A microservice for sending transactional emails for the Algorizzmus authentication system. This service provides API endpoints for sending account verification and password reset emails.
+A microservice for sending transactional emails for the Algorizzmus authentication system. This service handles sending account verification and password reset emails.
 
-## Features
-
-- Send account verification emails with verification codes
-- Send password reset emails with reset codes
-- HTML email templates with responsive design
-- Fallback to plain text emails if template processing fails
-
-## Technologies
-
-- Kotlin
-- Spring Boot
-- Spring Mail (JavaMailSender)
-- Thymeleaf (for email templates)
-
-## Prerequisites
-
-- JDK 17 or higher
-- Gradle
-- SMTP server access (Gmail account configured for this example)
-
-## Setup
+## How to run the application
 
 ### 1. Clone the repository
 
@@ -60,63 +40,55 @@ MAIL_PASSWORD=your-app-password
 
 The service will start on port 8081 by default.
 
-## API Endpoints
+## Environment setup and dependencies
 
-### Send Verification Email
+### Prerequisites
 
-Sends an email with a verification code for account activation.
+- JDK 17 or higher
+- Gradle
+- SMTP server access (Gmail account configured for this example)
 
-**Endpoint:** `POST /send-verification-email`
+### Technologies
 
-**Request Body:**
-```json
-{
-  "email": "user@example.com",
-  "code": "123456",
-  "username": "username"
-}
+- Kotlin
+- Spring Boot
+- Spring Mail (JavaMailSender)
+- Thymeleaf (for email templates)
+
+### Features
+
+- Send account verification emails with verification codes
+- Send password reset emails with reset codes
+- HTML email templates with responsive design
+- Fallback to plain text emails if template processing fails
+
+## High-level architecture overview
+
+The Algorizzmus Mail Service follows a standard Spring Boot microservice architecture:
+
+1. **Controller Layer** - Receives email requests
+   - `EmailController` - Handles requests and delegates to the service layer
+
+2. **Service Layer** - Business logic for email processing
+   - `EmailService` - Processes email requests, renders templates, and sends emails
+
+3. **Template Engine** - Renders HTML email templates
+   - Thymeleaf - Processes HTML templates with dynamic content
+
+4. **Mail Sender** - Handles SMTP communication
+   - JavaMailSender - Sends both HTML and plain text emails
+
+The service is designed with a fallback mechanism that defaults to plain text emails if HTML template processing fails, ensuring email delivery even in case of template errors.
+
+```
+[Client] → [EmailController] → [EmailService] → [JavaMailSender] → [SMTP Server]
+                                     ↓
+                              [Thymeleaf Engine]
+                                     ↓
+                            [HTML Email Templates]
 ```
 
-**Response:**
-- `200 OK` - Email sent successfully
-- `400 Bad Request` - Invalid request
-- `500 Internal Server Error` - Failed to send email
-
-### Send Password Reset Email
-
-Sends an email with a code for password reset.
-
-**Endpoint:** `POST /send-forgot-password-email`
-
-**Request Body:**
-```json
-{
-  "email": "user@example.com",
-  "code": "123456",
-  "username": "username"
-}
-```
-
-**Response:**
-- `200 OK` - Email sent successfully
-- `400 Bad Request` - Invalid request
-- `500 Internal Server Error` - Failed to send email
-
-## Email Templates
-
-The service includes two HTML email templates:
-
-1. **Account Verification—**Located at `src/main/resources/templates/email/account-verification.html`
-2. **Password Reset—**Located at `src/main/resources/templates/email/password-reset.html`
-
-Both templates are responsive and include:
-- Personalized greeting with the user's name
-- Clear display of the verification/reset code
-- Instructions for using the code
-- Security notices
-- Copy-to-clipboard functionality (when supported by the email client)
-
-## Configuration
+## Configuration instructions
 
 The application can be configured through `src/main/resources/application.properties`:
 
@@ -133,49 +105,19 @@ spring.mail.properties.mail.smtp.auth=true
 spring.mail.properties.mail.smtp.starttls.enable=true
 ```
 
-## Usage Examples
+### Email Templates
 
-### Using cURL
+The service includes two HTML email templates:
 
-#### Send Verification Email
-```bash
-curl -X POST http://localhost:8081/send-verification-email \
-  -H "Content-Type: application/json" \
-  -d '{"email":"user@example.com","code":"123456","username":"JohnDoe"}'
-```
+1. **Account Verification—**Located at `src/main/resources/templates/email/account-verification.html`
+2. **Password Reset—**Located at `src/main/resources/templates/email/password-reset.html`
 
-#### Send Password Reset Email
-```bash
-curl -X POST http://localhost:8081/send-forgot-password-email \
-  -H "Content-Type: application/json" \
-  -d '{"email":"user@example.com","code":"123456","username":"JohnDoe"}'
-```
-
-### Using Kotlin/Java Client
-
-```kotlin
-// Example using Spring RestTemplate
-val restTemplate = RestTemplate()
-val request = EmailCodeRequest(
-    email = "user@example.com",
-    code = "123456",
-    username = "JohnDoe"
-)
-
-// Send verification email
-val verificationResponse = restTemplate.postForEntity(
-    "http://localhost:8081/send-verification-email",
-    request,
-    String::class.java
-)
-
-// Send password reset email
-val resetResponse = restTemplate.postForEntity(
-    "http://localhost:8081/send-forgot-password-email",
-    request,
-    String::class.java
-)
-```
+Both templates are responsive and include:
+- Personalized greeting with the user's name
+- Clear display of the verification/reset code
+- Instructions for using the code
+- Security notices
+- Copy-to-clipboard functionality (when supported by the email client)
 
 ## License
 
