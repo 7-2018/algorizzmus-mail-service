@@ -2,9 +2,9 @@ name: Kotlin CI with Gradle
 
 on:
   push:
-    branches: [ main,develop ]
+    branches: [ main, develop ]
   pull_request:
-    branches: [ main,develop ]
+    branches: [ main, develop ]
 
 jobs:
   build:
@@ -23,7 +23,9 @@ jobs:
         run: chmod +x gradlew
 
       - name: Create .env file
-        run: echo "DATASOURCE_PASSWORD=${{ secrets.DATASOURCE_PASSWORD }}" > .env
+        run: |
+          echo "MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}" >> .env
+          echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> .env
 
       - name: Build and run tests with Gradle
         run: ./gradlew build
