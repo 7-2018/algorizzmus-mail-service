@@ -10,7 +10,8 @@ import org.thymeleaf.context.Context
 
 @Service
 class EmailService(
-    private val mailSender: JavaMailSender, private val templateEngine: TemplateEngine
+    private val mailSender: JavaMailSender,
+    private val templateEngine: TemplateEngine,
 ) {
     @Value("\${spring.mail.username}")
     private lateinit var mailUsername: String
@@ -48,7 +49,6 @@ class EmailService(
         val context = Context()
         variables.forEach { (key, value) -> context.setVariable(key, value) }
         return templateEngine.process(templateName, context)
-
     }
 
     fun sendVerificationEmail(
@@ -56,13 +56,14 @@ class EmailService(
         code: String,
         username: String,
     ) {
-        val htmlContent = processTemplate(
-            "email/account-verification",
-            mapOf(
-                "username" to username,
-                "code" to code,
-            ),
-        )
+        val htmlContent =
+            processTemplate(
+                "email/account-verification",
+                mapOf(
+                    "username" to username,
+                    "code" to code,
+                ),
+            )
 
         if (htmlContent != null) {
             sendHtmlEMail(to, REGISTRATION_EMAIL_SUBJECT, htmlContent)
@@ -77,14 +78,14 @@ class EmailService(
         code: String,
         username: String,
     ) {
-
-        val htmlContent = processTemplate(
-            "email/password-reset",
-            mapOf(
-                "username" to username,
-                "code" to code,
-            ),
-        )
+        val htmlContent =
+            processTemplate(
+                "email/password-reset",
+                mapOf(
+                    "username" to username,
+                    "code" to code,
+                ),
+            )
 
         if (htmlContent != null) {
             sendHtmlEMail(to, PASSWORD_RESET_EMAIL_SUBJECT, htmlContent)
@@ -99,4 +100,3 @@ class EmailService(
         private const val PASSWORD_RESET_EMAIL_SUBJECT = "Reset your password"
     }
 }
-
